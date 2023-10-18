@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -15,6 +16,13 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundLayer;
     private float groundCheckRadius = 0.1f;
 
+    /* kinda liking making our own datatype with certain possible values
+     * 
+     * if you hover over the values, c# gives each one an integer value as well
+     */ 
+    private enum MovementState { idle, running, jumping, falling }
+    
+    
     /* Start is a method which runs at the very first frame just once
      * 
      * We can initialize our variables here so they dont initialize every
@@ -58,24 +66,42 @@ public class PlayerMovement : MonoBehaviour
 
     private void UpdateAnimationState(float dirX)
     {
+        // create an object of MovementState
+        MovementState state;
+
         // if moving to the right, activate running animation, reset x rotation
         if (dirX > 0f)
         {
-            anim.SetBool("isRunning", true);
+            state = MovementState.running;
             sprite.flipX = false;
         }
         // if moving to the left, activate running animation, flip x rotation to face the correct way
         else if (dirX < 0f)
         {
-            anim.SetBool("isRunning", true);
+            state = MovementState.running;
             sprite.flipX = true;
         }
         // if not moving, go back to idle state
         else
         {
-            anim.SetBool("isRunning", false);
+            state = MovementState.idle;
         }
-            
+
+        // check vertical movement stuff
+
+        // if moving upwards => jump animation
+        if (rb.velocity.y > 0.1f)
+        {
+            state = MovementState.jumping;
+        }
+        // if moving downwards => falling animation
+        else if (rb.velocity.y < -0.1f)
+        {
+            state = MovementState.falling;
+        }
+
+        // update to correct animation every frame
+        anim.SetInteger("state", (int) state);
     }
 
 }
