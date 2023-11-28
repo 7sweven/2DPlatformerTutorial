@@ -14,6 +14,7 @@ public class PlayerLife : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
+    // if you hit a trap die
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Trap"))
@@ -22,12 +23,14 @@ public class PlayerLife : MonoBehaviour
         }
     }
 
+    // trigger death animation, freeze player
     private void Die()
     {
         anim.SetTrigger("Death");
         rb.bodyType = RigidbodyType2D.Static;
     }
 
+    // restarts level at end of death animation
     private void RestartLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
